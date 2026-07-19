@@ -4,24 +4,46 @@ document.addEventListener("DOMContentLoaded", () => {
     const quote = document.querySelector('.quotes-text');
     const authorQuote = document.querySelector('.author')
 
-    async function quoteGeneration() {
-        const response = await fetch("https://api.quotable.io/random");
+async function quoteGeneration() {
+    try {
+        const response = await fetch(
+            "https://api.api-ninjas.com/v2/randomquotes",
+            {
+                method: "GET",
+                headers: {
+                    "X-Api-Key": API_KEY
+                }
+            }
+        );
+
         const data = await response.json();
+
         if (response.ok) {
-            quote.textContent = "“" + data.content + "”";
-            authorQuote.textContent =  "— " + data.author;
-        }
-        else {
-            quote.textContent = "*Error503 (Too frequent generation of quotes, do not overload the server!)";
+            quote.textContent = `“${data[0].quote}”`;
+            authorQuote.textContent = `— ${data[0].author}`;
+
+            quote.style.color = "";
+            quote.style.fontWeight = "";
+            quote.style.fontStyle = "";
+        } else {
+            quote.textContent =
+                "*Error 503 (Too frequent generation of quotes, do not overload the server!)";
+
             quote.style.color = "red";
             quote.style.fontWeight = "bold";
-            quote.style.fontStyle = "Italic"
+            quote.style.fontStyle = "italic";
         }
+    } catch (error) {
+        console.error("Error:", error);
+
+        quote.textContent = "*Failed to connect to the server";
+        quote.style.color = "red";
     }
+}
 
-    button.addEventListener("click", quoteGeneration);
+button.addEventListener("click", quoteGeneration);
 
-    quoteGeneration();
+quoteGeneration();
 });
 
 
